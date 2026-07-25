@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arena.ai System Prompts Explorer | MOSKV-1 C5-REAL</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0A0A0A;
+      --bg-card: rgba(18, 18, 22, 0.75);
+      --bg-card-hover: rgba(26, 26, 36, 0.9);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-accent: #2B3BE5;
+      --text-primary: #ECECF1;
+      --text-secondary: #9E9EAE;
+      --text-muted: #626273;
+      --accent-blue: #2B3BE5;
+      --accent-glow: rgba(43, 59, 229, 0.35);
+      --accent-emerald: #10B981;
+      --accent-amber: #F59E0B;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(43, 59, 229, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+      background-attachment: fixed;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border-color);
+      backdrop-filter: blur(16px);
+      background: rgba(10, 10, 10, 0.85);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 1.25rem 2rem;
+    }
+
+    .header-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .status-badge {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: rgba(43, 59, 229, 0.2);
+      border: 1px solid var(--accent-blue);
+      color: #8B96FF;
+      letter-spacing: 0.05em;
+    }
+
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    h1 span.title-accent {
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    .stats-strip {
+      display: flex;
+      gap: 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .stat-val {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+      width: 100%;
+      flex: 1;
+    }
+
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .search-box {
+      position: relative;
+      width: 100%;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.85rem 1.25rem 0.85rem 2.8rem;
+      background: rgba(20, 20, 26, 0.8);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .pills-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .pill-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 0.4rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .pill-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
+    }
+
+    .pill-btn.active {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      color: #FFF;
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .prompt-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      backdrop-filter: blur(8px);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .prompt-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: transparent;
+      transition: background 0.25s ease;
+    }
+
+    .prompt-card:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(255, 255, 255, 0.16);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .prompt-card:hover::before {
+      background: var(--accent-blue);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.85rem;
+      gap: 0.75rem;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      word-break: break-word;
+    }
+
+    .family-tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .prompt-content {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 6px;
+      padding: 0.85rem;
+      color: #C9D1D9;
+      max-height: 180px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin-bottom: 1rem;
+      line-height: 1.45;
+    }
+
+    .prompt-content.empty {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      padding-top: 0.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .copy-btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 0.3rem 0.65rem;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+    }
+
+    .copy-btn.copied {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: var(--accent-emerald);
+      color: var(--accent-emerald);
+    }
+
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <div class="logo-group">
+        <span class="status-badge">C5-REAL</span>
+        <h1>ARENA.AI <span class="title-accent">// System Prompt Inspector</span></h1>
+      </div>
+      <div class="stats-strip">
+        <div class="stat-item">
+          <span>Templates:</span>
+          <span class="stat-val" id="stat-total">102</span>
+        </div>
+        <div class="stat-item">
+          <span>Explicit Prompts:</span>
+          <span class="stat-val" id="stat-explicit" style="color: var(--accent-emerald)">--</span>
+        </div>
+        <div class="stat-item">
+          <span>Passthrough:</span>
+          <span class="stat-val" id="stat-passthrough" style="color: var(--accent-amber)">--</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="controls-panel">
+      <div class="search-box">
+        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="search-input" class="search-input" placeholder="Buscar por modelo (ej. Claude, GPT-4, Llama, Qwen, DeepSeek)...">
+      </div>
+      <div class="pills-group" id="pills-container">
+        <button class="pill-btn active" data-family="ALL">Todos (102)</button>
+        <!-- Filter pills dynamically inserted here -->
+      </div>
+    </div>
+
+    <div class="grid-container" id="grid-container">
+      <!-- Prompt cards dynamically inserted here -->
+    </div>
+  </main>
+
+  <footer>
+    MOSKV-1 APEX SINGULARITY // Industrial Noir 2026 // Ledger Hash: 3bdfbb5
+  </footer>
+
+  <script>
+    let allPrompts = [];
+    let activeFamily = 'ALL';
+
+    async function init() {
+      try {
+        const res = await fetch('arena_system_prompts.json');
+        allPrompts = await res.json();
+        updateStats();
+        buildPills();
+        render();
+      } catch (err) {
+        console.error('Failed loading prompts data:', err);
+      }
+    }
+
+    function updateStats() {
+      document.getElementById('stat-total').textContent = allPrompts.length;
+      const explicit = allPrompts.filter(p => p.has_system_prompt).length;
+      const passthrough = allPrompts.length - explicit;
+      document.getElementById('stat-explicit').textContent = explicit;
+      document.getElementById('stat-passthrough').textContent = passthrough;
+    }
+
+    function buildPills() {
+      const familiesMap = {};
+      allPrompts.forEach(p => {
+        familiesMap[p.family] = (familiesMap[p.family] || 0) + 1;
+      });
+
+      const container = document.getElementById('pills-container');
+      container.innerHTML = `<button class="pill-btn active" data-family="ALL">Todos (${allPrompts.length})</button>`;
+
+      Object.keys(familiesMap).sort().forEach(fam => {
+        const btn = document.createElement('button');
+        btn.className = 'pill-btn';
+        btn.dataset.family = fam;
+        btn.textContent = `${fam} (${familiesMap[fam]})`;
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeFamily = fam;
+          render();
+        });
+        container.appendChild(btn);
+      });
+
+      container.querySelector('[data-family="ALL"]').addEventListener('click', (e) => {
+        document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        activeFamily = 'ALL';
+        render();
+      });
+    }
+
+    function render() {
+      const query = document.getElementById('search-input').value.toLowerCase().trim();
+      const grid = document.getElementById('grid-container');
+      grid.innerHTML = '';
+
+      const filtered = allPrompts.filter(p => {
+        const matchFamily = activeFamily === 'ALL' || p.family === activeFamily;
+        const matchQuery = !query || 
+          p.name.toLowerCase().includes(query) || 
+          p.id.toLowerCase().includes(query) || 
+          p.system_message.toLowerCase().includes(query);
+        return matchFamily && matchQuery;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: var(--text-muted); font-family: var(--font-mono)">
+          No se encontraron System Prompts coincidentes.
+        </div>`;
+        return;
+      }
+
+      filtered.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'prompt-card';
+
+        const isPass = !p.has_system_prompt;
+        const contentClass = isPass ? 'prompt-content empty' : 'prompt-content';
+
+        card.innerHTML = `
+          <div>
+            <div class="card-header">
+              <div class="card-title">${escapeHtml(p.name)}</div>
+              <span class="family-tag">${escapeHtml(p.family)}</span>
+            </div>
+            <div class="${contentClass}">${escapeHtml(p.system_message)}</div>
+          </div>
+          <div class="card-footer">
+            <span>ID: ${escapeHtml(p.id)}</span>
+            <button class="copy-btn" onclick="copyPrompt(this, \`${escapeJs(p.system_message)}\`)">Copiar</button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function escapeHtml(str) {
+      return (str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function escapeJs(str) {
+      return (str || '').replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\${/g, '\\${');
+    }
+
+    function copyPrompt(btn, text) {
+      navigator.clipboard.writeText(text).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = 'Copias!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.classList.remove('copied');
+        }, 1500);
+      });
+    }
+
+    document.getElementById('search-input').addEventListener('input', render);
+
+    init();
+  </script>
+</body>
+</html>
